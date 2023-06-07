@@ -1,0 +1,32 @@
+.navLink {
+  cursor: pointer;
+  color: black;
+  display: flex;
+  align-items: center;
+  padding: 0px 8px 0px 10px;
+  border-left: 0.5px solid transparent;
+}
+
+ul{
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
+
+}
+
+.navLink:hover {
+  color: grey;
+  border-left: 0.5px solid lightgrey;
+}
+
+.navLink:active, .navLinkActive, .navLinkActive:hover {
+  color: rgb(0, 114, 229);
+  border-left: 0.5px solid skyblue;
+}
+
+.navLinkActive:hover {
+  border-left: 0.5px solid rgb(0, 114, 229);
+}
+
+ul {
+    list-style-type: none;
+}
