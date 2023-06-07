@@ -6,6 +6,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `npx generate-react-cli component <component-name>`
+
+It generates component
+
+### `./add_log.sh <message>`
+
+it appends a work log
+
 ### `npm start`
 
 Runs the app in the development mode.\
