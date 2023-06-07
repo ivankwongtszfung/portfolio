@@ -7,7 +7,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({
-  sections = ["section", "section", ["section", "sections"], "section"],
+  sections = ["section", "section", ["section", "section"], "section"],
 }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const handleClick = (index: number) => setSelectedIndex(index);
@@ -24,9 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({
             {sections.map((section) => {
               let item;
               if (Array.isArray(section)) {
-                level += 1;
-                item = navbarItem(section, level, index);
-                level -= 1;
+                item = navbarItem(section, level + 1, index);
                 index += section.length;
               } else {
                 item = navbarItem(section, level, index);
@@ -42,16 +40,14 @@ const Navbar: React.FC<NavbarProps> = ({
           <li>
             <Link
               sx={{ "padding-left": level * 10 }}
-              onClick={() => handleClick(index)}
               underline="none"
               color={selectedIndex === index ? "" : "inherit"}
+              onClick={() => handleClick(index)}
               className={`navLink ${
                 selectedIndex === index ? "navLinkActive" : ""
               }`}
             >
-              <span>
-                {sections} {index}
-              </span>
+              <span>{sections}</span>
             </Link>
           </li>
         );
