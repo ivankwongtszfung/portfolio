@@ -6,10 +6,10 @@ import ReactMarkdown from "react-markdown";
 import { StringLiteral } from "typescript";
 
 interface ArticleProps {
-  title: string;
-  dateOfCreation: Date;
-  tags: string[];
-  content: string;
+  title?: string;
+  dateOfCreation?: Date;
+  tags?: string[];
+  content?: string;
 }
 
 const Title = ({ content }: { content: string }) => (
@@ -33,13 +33,15 @@ const Article: FC<ArticleProps> = ({
   title = "title",
   dateOfCreation = new Date(),
   tags = ["tag1", "tag2"],
-  content = "Good Job",
+  content = "# Good Job",
 }) => (
   <div data-testid="Article">
     <Title content={title} />
     <DateOfCreation date={dateOfCreation} />
     <Tags tags={tags} />
-    <ReactMarkdown>{content}</ReactMarkdown>
+    <Typography gutterBottom>
+      <ReactMarkdown>{content}</ReactMarkdown>
+    </Typography>
   </div>
 );
 
