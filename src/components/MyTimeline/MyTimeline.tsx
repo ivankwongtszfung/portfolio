@@ -1,3 +1,4 @@
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
   Timeline,
   TimelineConnector,
@@ -8,41 +9,86 @@ import {
   TimelineSeparator,
   timelineOppositeContentClasses,
 } from "@mui/lab";
-import { Typography } from "@mui/material";
+import {
+  Collapse,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+} from "@mui/material";
+import ClassIcon from "@mui/icons-material/Class";
+import LaptopMacIcon from "@mui/icons-material/LaptopMac";
 import { format } from "date-fns";
 import React, { FC } from "react";
 
-interface MyTimelineProps {
+export interface MyTimelineProps {
   items?: MyTimeLineItemProps[];
 }
-interface MyTimeLineItemProps {
+export interface MyTimeLineItemProps {
   date: Date;
   title: string;
   contents: string[];
 }
 
-const MyTimeLineItem: FC<MyTimeLineItemProps> = ({ date, title, contents }) => {
+interface IMyTimeLineItemProps extends MyTimeLineItemProps {
+  lastItem: boolean;
+}
+
+const MyTimeLineItem: FC<IMyTimeLineItemProps> = ({
+  date,
+  title,
+  contents,
+  lastItem,
+}) => {
+  const [open, setOpen] = React.useState(false);
+  const myRef = React.useRef<HTMLDivElement>(null);
+
+  const handleClick = () => setOpen(!open);
+  const handleEntered = () =>
+    myRef?.current?.scrollIntoView({ behavior: "smooth" });
   const formatDate = (date: Date) => {
     return `${format(date, "MMM,yyyy")}`;
   };
   return (
     <TimelineItem>
-      <TimelineOppositeContent>
-        <Typography variant="body2" color="textSecondary">
-          {formatDate(date)}
-        </Typography>
+      <TimelineOppositeContent
+        sx={{ m: "auto 0" }}
+        align="right"
+        variant="body2"
+        color="text.secondary"
+      >
+        {formatDate(date)}
       </TimelineOppositeContent>
       <TimelineSeparator>
-        <TimelineDot></TimelineDot>
+        <TimelineDot color="primary" variant="outlined">
+          {!lastItem ? <LaptopMacIcon /> : <ClassIcon />}
+        </TimelineDot>
         <TimelineConnector />
       </TimelineSeparator>
-      <TimelineContent sx={{ py: "12px", px: 2 }}>
-        <Typography variant="h6" component="h1">
-          {title}
-        </Typography>
-        {contents.map((content) => (
-          <Typography>{content}</Typography>
-        ))}
+      <TimelineContent sx={{ m: "auto 0", p: "0 0" }}>
+        <List disablePadding>
+          <ListItemButton onClick={handleClick}>
+            <ListItemText
+              primary={title}
+              primaryTypographyProps={{ variant: "h6" }}
+            />
+            {contents.length > 0 && (open ? <ExpandLess /> : <ExpandMore />)}
+          </ListItemButton>
+        </List>
+        <Collapse
+          in={open}
+          timeout="auto"
+          unmountOnExit
+          onEntered={handleEntered}
+        >
+          <List ref={myRef} dense component="div" disablePadding>
+            {contents.map((content) => (
+              <ListItem sx={{ pl: 4 }}>
+                <ListItemText primary={content} />
+              </ListItem>
+            ))}
+          </List>
+        </Collapse>
       </TimelineContent>
     </TimelineItem>
   );
@@ -75,12 +121,17 @@ const MyTimeline: FC<MyTimelineProps> = ({
     data-testid="MyTimeline"
     sx={{
       [`& .${timelineOppositeContentClasses.root}`]: {
-        flex: 0.2,
+        flex: 0.1,
       },
     }}
   >
-    {items.map(({ date, title, contents }) => (
-      <MyTimeLineItem date={date} title={title} contents={contents} />
+    {items.map(({ date, title, contents }, index) => (
+      <MyTimeLineItem
+        date={date}
+        title={title}
+        contents={contents}
+        lastItem={index === items.length - 1}
+      />
     ))}
   </Timeline>
 );
