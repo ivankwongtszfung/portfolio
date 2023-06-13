@@ -1,30 +1,28 @@
 import React, { Suspense } from "react";
-import logo from "./logo.svg";
-import "./App.css";
 import { Box } from "@mui/material";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import MiniDrawer, { MiniDrawerProp } from "./components/NavDrawer/NavDrawer";
-import MyTimeline from "./components/MyTimeline/MyTimeline";
+import MiniDrawer from "./components/NavDrawer/NavDrawer";
 import Article from "./components/Article/Article";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
+import Home from "./pages/Home";
 
 function App() {
   const navigate = useNavigate();
   const links = {
     home: "/",
-    about: "/about",
+    // about: "/about",
   };
 
   const getIcon = (name: string) => {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "home":
-        return <HomeIcon />;
+        return HomeIcon;
       case "about":
-        return <InfoIcon />;
+        return InfoIcon;
       default:
-        return <DisabledByDefaultIcon />;
+        return DisabledByDefaultIcon;
     }
   };
   const getLink = (path: string) => {
@@ -32,42 +30,25 @@ function App() {
       navigate(path);
     };
   };
-  const drawerProps: () => MiniDrawerProp = () => {
-    const props: MiniDrawerProp = { items: {} };
-    Object.entries(links).map(([name, path]) => {
-      if (props.items)
-        props.items[name] = {
-          Icon: getIcon(name),
-          onClick: getLink(path),
-        };
-    });
-    return props;
+
+  const Drawer = () => {
+    const props: { [key: string]: any } = {};
+    Object.entries(links).map(
+      ([name, path]) =>
+        (props[name] = { Icon: getIcon(name), onClick: getLink(path) })
+    );
+    return <MiniDrawer items={props} />;
   };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-
       <Box sx={{ display: "flex" }}>
-        <MiniDrawer />
+        <Drawer />
         <Box component="main" sx={{ flexGrow: 1 }}>
           <Suspense fallback={<div className="container">Loading...</div>}>
             <Routes>
-              <Route path="/" element={<MyTimeline />} />
-              <Route path="/about" element={<Article />} />
-              <Route path="*" element={<Article />} />
+              <Route path="/" element={<Home />} />
+              {/* <Route path="/about" element={<Article />} /> */}
+              <Route path="*" element={<Home />} />
             </Routes>
           </Suspense>
         </Box>
