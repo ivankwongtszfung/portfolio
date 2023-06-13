@@ -47,7 +47,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 selectedIndex === index ? "navLinkActive" : ""
               }`}
             >
-              <span>{sections}</span>
+              <Typography>{sections}</Typography>
             </Link>
           </li>
         );
@@ -57,7 +57,14 @@ const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  return <nav aria-label="Content">{navbarItem(sections)}</nav>;
+  return (
+    <>
+      <Typography variant="overline" display="block" gutterBottom>
+        Contents
+      </Typography>
+      {navbarItem(sections)}
+    </>
+  );
 };
 
 export default Navbar;
