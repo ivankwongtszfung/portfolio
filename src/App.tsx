@@ -4,13 +4,15 @@ import { iconFor, SunIcon, MoonIcon } from "./components/icons";
 import About from "./sections/About";
 import Experience from "./sections/Experience";
 import Projects from "./sections/Projects";
+import Articles from "./sections/Articles";
 
-type TabId = "about" | "experience" | "projects";
+type TabId = "about" | "experience" | "projects" | "articles";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "about", label: "about" },
   { id: "experience", label: "experience" },
   { id: "projects", label: "projects" },
+  { id: "articles", label: "articles" },
 ];
 
 const isTab = (v: string): v is TabId =>
@@ -123,6 +125,7 @@ function App() {
       {tab === "about" && <About />}
       {tab === "experience" && <Experience />}
       {tab === "projects" && <Projects />}
+      {tab === "articles" && <Articles />}
 
       <footer className="foot">
         <span>
