@@ -1,58 +1,112 @@
-import React, { Suspense } from "react";
-import { Box } from "@mui/material";
-import { Route, Routes, useNavigate } from "react-router-dom";
-import MiniDrawer from "./components/NavDrawer/NavDrawer";
-import Article from "./components/Article/Article";
-import HomeIcon from "@mui/icons-material/Home";
-import InfoIcon from "@mui/icons-material/Info";
-import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
-import Home from "./pages/Home";
+import * as React from "react";
+import { profile } from "./content/profile";
+import { iconFor } from "./components/icons";
+import About from "./sections/About";
+import Experience from "./sections/Experience";
+import Projects from "./sections/Projects";
+import Articles from "./sections/Articles";
+
+type TabId = "about" | "experience" | "projects" | "articles";
+
+const TABS: { id: TabId; label: string }[] = [
+  { id: "about", label: "about" },
+  { id: "experience", label: "experience" },
+  { id: "projects", label: "projects" },
+  { id: "articles", label: "articles" },
+];
+
+const isTab = (v: string): v is TabId =>
+  TABS.some((t) => t.id === v);
+
+const readHash = (): TabId => {
+  const h = window.location.hash.replace("#", "");
+  return isTab(h) ? h : "about";
+};
 
 function App() {
-  const navigate = useNavigate();
-  const links = {
-    home: "/",
-    // about: "/about",
-  };
+  const [tab, setTab] = React.useState<TabId>(readHash);
 
-  const getIcon = (name: string) => {
-    switch (name.toLowerCase()) {
-      case "home":
-        return HomeIcon;
-      case "about":
-        return InfoIcon;
-      default:
-        return DisabledByDefaultIcon;
+  React.useEffect(() => {
+    const onHash = () => setTab(readHash());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
+  const select = (id: TabId) => {
+    setTab(id);
+    if (window.location.hash !== `#${id}`) {
+      window.history.pushState(null, "", `#${id}`);
     }
-  };
-  const getLink = (path: string) => {
-    return () => {
-      navigate(path);
-    };
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const Drawer = () => {
-    const props: { [key: string]: any } = {};
-    Object.entries(links).map(
-      ([name, path]) =>
-        (props[name] = { Icon: getIcon(name), onClick: getLink(path) })
-    );
-    return <MiniDrawer items={props} />;
-  };
   return (
-    <div className="App">
-      <Box sx={{ display: "flex" }}>
-        <Drawer />
-        <Box component="main" sx={{ flexGrow: 1 }}>
-          <Suspense fallback={<div className="container">Loading...</div>}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              {/* <Route path="/about" element={<Article />} /> */}
-              <Route path="*" element={<Home />} />
-            </Routes>
-          </Suspense>
-        </Box>
-      </Box>
+    <div className="wrap">
+      <header className="masthead">
+        <h1 className="masthead__name">
+          <span className="status-dot" aria-hidden />
+          {profile.name}
+        </h1>
+        <p className="masthead__role">{profile.title}</p>
+        <p className="masthead__tagline">{profile.tagline}</p>
+
+        <div className="masthead__meta">
+          <span className="pill">
+            <span style={{ color: "var(--accent)" }}>◉</span>
+            {profile.location}
+          </span>
+          <span className="pill">@{profile.handle}</span>
+          <span style={{ flex: 1 }} />
+          <nav className="social" aria-label="Social links">
+            {profile.links.map((l) => {
+              const Icon = iconFor(l.kind);
+              return (
+                <a
+                  key={l.kind}
+                  href={l.href}
+                  aria-label={l.label}
+                  title={l.label}
+                  target={l.kind === "email" ? undefined : "_blank"}
+                  rel="noreferrer"
+                >
+                  <Icon />
+                </a>
+              );
+            })}
+          </nav>
+        </div>
+      </header>
+
+      <nav className="tabs" role="tablist" aria-label="Sections">
+        {TABS.map((t, i) => (
+          <button
+            key={t.id}
+            id={`tab-${t.id}`}
+            role="tab"
+            aria-selected={tab === t.id}
+            aria-controls={`panel-${t.id}`}
+            className={`tab ${tab === t.id ? "tab--active" : ""}`}
+            onClick={() => select(t.id)}
+          >
+            <span className="tab__idx">0{i + 1}</span>
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      {tab === "about" && <About />}
+      {tab === "experience" && <Experience />}
+      {tab === "projects" && <Projects />}
+      {tab === "articles" && <Articles />}
+
+      <footer className="foot">
+        <span>
+          © {profile.name} · built with React, deployed on GitHub Pages
+        </span>
+        <a href="https://github.com/ivankwongtszfung" target="_blank" rel="noreferrer">
+          github.com/{profile.handle}
+        </a>
+      </footer>
     </div>
   );
 }
