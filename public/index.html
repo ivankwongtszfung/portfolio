@@ -24,6 +24,27 @@
     <meta name="twitter:card" content="summary" />
 
     <title>Ivan Kwong — AI / Software Engineer</title>
+
+    <!-- Set theme before paint to avoid a flash of the wrong color scheme. -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("theme");
+          var prefersLight = window.matchMedia(
+            "(prefers-color-scheme: light)"
+          ).matches;
+          var theme =
+            saved === "light" || saved === "dark"
+              ? saved
+              : prefersLight
+              ? "light"
+              : "dark";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to view this site.</noscript>

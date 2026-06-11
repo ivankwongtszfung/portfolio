@@ -1,6 +1,6 @@
 import * as React from "react";
 import { profile } from "./content/profile";
-import { iconFor } from "./components/icons";
+import { iconFor, SunIcon, MoonIcon } from "./components/icons";
 import About from "./sections/About";
 import Experience from "./sections/Experience";
 import Projects from "./sections/Projects";
@@ -23,14 +23,33 @@ const readHash = (): TabId => {
   return isTab(h) ? h : "about";
 };
 
+type Theme = "light" | "dark";
+
+const readTheme = (): Theme => {
+  const saved = window.localStorage.getItem("theme");
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia("(prefers-color-scheme: light)").matches
+    ? "light"
+    : "dark";
+};
+
 function App() {
   const [tab, setTab] = React.useState<TabId>(readHash);
+  const [theme, setTheme] = React.useState<Theme>(readTheme);
 
   React.useEffect(() => {
     const onHash = () => setTab(readHash());
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    window.localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () =>
+    setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   const select = (id: TabId) => {
     setTab(id);
@@ -73,6 +92,15 @@ function App() {
                 </a>
               );
             })}
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            >
+              {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+            </button>
           </nav>
         </div>
       </header>
